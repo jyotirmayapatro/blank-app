@@ -6,6 +6,8 @@
 
 streamlit 
 openai        
-# langchain 
+langchain 
+# langchain>=0.0.209
+langchain_community
 
-langchain>=0.0.209
+# langchain>=0.0.209
