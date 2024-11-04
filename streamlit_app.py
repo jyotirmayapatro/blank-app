@@ -14,6 +14,7 @@ os.environ["OPENAI_API_KEY"] = st.secrets["OpenAIkey"]
 # Define different types of responses (3)
 from langchain.prompts import PromptTemplate
 
+# Define templates for each condition
 negative_caused_by_the_airline_template = PromptTemplate(
     template="""If the text below describes a negative experience due to an airline issue, 
     generate a response offering sympathies and mentioning customer service will follow up. 
@@ -35,11 +36,12 @@ positive_experience_template = PromptTemplate(
 from langchain.chains import LLMChain
 from langchain_core.output_parsers import StrOutputParser
 from langchain.chat_models import ChatOpenAI
+from langchain_core.runnables import RunnableBranch
 
-# OpenAI model
+# Initialize OpenAI model
 llm = ChatOpenAI(api_key=openai.api_key, model="gpt-3.5-turbo")
 
-# Chains
+# Chains for each type of response
 negative_caused_by_the_airline_chain = LLMChain(
     llm=llm, prompt=negative_caused_by_the_airline_template, output_parser=StrOutputParser()
 )
@@ -52,20 +54,17 @@ positive_experience_chain = LLMChain(
     llm=llm, prompt=positive_experience_template, output_parser=StrOutputParser()
 )
 
-# RunnableBranch
-from langchain_core.runnables import RunnableBranch
-
+# Set up RunnableBranch for conditional routing
 branch = RunnableBranch(
     (lambda x: "bad" in x["text"].lower() and "airline" in x["text"].lower(), negative_caused_by_the_airline_chain),
     (lambda x: "bad" in x["text"].lower() and "airline" not in x["text"].lower(), negative_beyond_airline_control_chain),
-    positive_experience_chain  # This will be used if neither of the above conditions match
+    positive_experience_chain  # Default if no conditions are met
 )
 
-# Use the branch to provide a response based on the user input
+# Use RunnableBranch to invoke the appropriate chain based on the input
 if st.button("Submit Feedback"):
     if user_prompt:
-        # Use invoke instead of run
-        response = branch.invoke({"text": user_prompt}).strip()
+        response = branch.invoke({"text": user_prompt}).strip()  # Ensure correct use of invoke
         st.write(response)
     else:
         st.write("Please enter your experience.")
