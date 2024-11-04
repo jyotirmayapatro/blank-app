@@ -63,7 +63,17 @@ branch = RunnableBranch(
 # use those branch to give an output response based on the user input
 if st.button("Submit Feedback"):
     if user_prompt:
-        response = branch.run({"text": user_prompt}).strip()
-        st.write(response)
+        try:
+            # Run the branch and capture the response
+            response = branch.run({"text": user_prompt})
+            
+            # Check if the response is a string before using .strip()
+            if isinstance(response, str):
+                st.write(response.strip())
+            else:
+                st.write("Received a non-string response:", response)
+        except Exception as e:
+            # Catch any unexpected errors and display them
+            st.error(f"An error occurred: {e}")
     else:
         st.write("Please enter your experience.")
