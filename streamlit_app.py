@@ -12,6 +12,7 @@ user_prompt = st.text_area("What is your latest travel experience?")
 # Load your API Key from environment variables
 os.environ["OPENAI_API_KEY"] = st.secrets["OpenAIkey"]
 
+
 # Initialize OpenAI API
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
