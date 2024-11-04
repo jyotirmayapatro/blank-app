@@ -44,7 +44,7 @@ from langchain.chat_models import ChatOpenAI
 # Initialize OpenAI model
 llm = ChatOpenAI(api_key=api_key, model="gpt-4")
 
-# Chains
+# chains
 negative_caused_by_the_airline_chain = LLMChain(
     llm=llm, prompt=negative_caused_by_the_airline_template, output_parser=StrOutputParser()
 )
