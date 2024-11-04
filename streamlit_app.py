@@ -8,18 +8,11 @@ st.title("JP's Super Awesome App for Travel Experience!")
 # User input for travel experience
 user_prompt = st.text_area("What is your latest travel experience?")
 
-# Load API Key
-# api_key = st.secrets.get("OpenAIkey") or os.getenv("OPENAI_API_KEY")
-# if not api_key:
-#     st.error("OpenAI API key is not set. Please configure it in Streamlit secrets or environment variables.")
-# openai.api_key = api_key
-
 os.environ["OPENAI_API_KEY"] = st.secrets["OpenAIkey"]
 
-# templates for different types of responses
+# different types of responses(3)
 from langchain.prompts import PromptTemplate
 
-#  template names
 negative_caused_by_the_airline_template = PromptTemplate(
     template="""If the text below describes a negative experience due to an airline issue, 
     generate a response offering sympathies and mentioning customer service will follow up. 
@@ -38,16 +31,15 @@ positive_experience_template = PromptTemplate(
     input_variables=["text"]
 )
 
-# Import the necessary LangChain modules
 from langchain.chains import LLMChain
 from langchain_core.output_parsers import StrOutputParser
 from langchain.chat_models import ChatOpenAI
 
-# Initialize OpenAI model
+# OpenAI model
 # llm = ChatOpenAI(api_key=api_key, model="gpt-4")
 llm = ChatOpenAI(api_key=openai.api_key, model="gpt-3.5-turbo")
 
-# chains
+# 3 chains
 negative_caused_by_the_airline_chain = LLMChain(
     llm=llm, prompt=negative_caused_by_the_airline_template, output_parser=StrOutputParser()
 )
