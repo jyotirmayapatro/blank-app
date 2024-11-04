@@ -8,6 +8,7 @@ st.title("JP's Super Awesome App for Travel Experience!")
 # User input for travel experience
 user_prompt = st.text_area("What is your latest travel experience?")
 
+# Load OpenAI API key
 os.environ["OPENAI_API_KEY"] = st.secrets["OpenAIkey"]
 
 # Define different types of responses (3)
@@ -38,7 +39,7 @@ from langchain.chat_models import ChatOpenAI
 # OpenAI model
 llm = ChatOpenAI(api_key=openai.api_key, model="gpt-3.5-turbo")
 
-# chains
+# Chains
 negative_caused_by_the_airline_chain = LLMChain(
     llm=llm, prompt=negative_caused_by_the_airline_template, output_parser=StrOutputParser()
 )
@@ -51,29 +52,28 @@ positive_experience_chain = LLMChain(
     llm=llm, prompt=positive_experience_template, output_parser=StrOutputParser()
 )
 
-# RunnableBranch
+# Import RunnableBranch and set up branching logic
 from langchain_core.runnables import RunnableBranch
 
 branch = RunnableBranch(
     (lambda x: "bad" in x["text"].lower() and "airline" in x["text"].lower(), negative_caused_by_the_airline_chain),
     (lambda x: "bad" in x["text"].lower() and "airline" not in x["text"].lower(), negative_beyond_airline_control_chain),
-    positive_experience_chain  # This will be used if neither of the above conditions match
+    positive_experience_chain  # Default to this chain if neither condition matches
 )
 
-# use those branch to give an output response based on the user input
+# Use branch to process user input and give a response
 if st.button("Submit Feedback"):
     if user_prompt:
         try:
-            # Run the branch and capture the response
-            response = branch.run({"text": user_prompt})
+            # Call the branch directly with the input data
+            response = branch({"text": user_prompt})
             
-            # Check if the response is a string before using .strip()
+            # Check if the response is a string and display it
             if isinstance(response, str):
                 st.write(response.strip())
             else:
                 st.write("Received a non-string response:", response)
         except Exception as e:
-            # Catch any unexpected errors and display them
             st.error(f"An error occurred: {e}")
     else:
         st.write("Please enter your experience.")
