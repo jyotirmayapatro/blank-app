@@ -10,7 +10,7 @@ user_prompt = st.text_area("What is your latest travel experience?")
 
 os.environ["OPENAI_API_KEY"] = st.secrets["OpenAIkey"]
 
-# different types of responses(3)
+# Define different types of responses (3)
 from langchain.prompts import PromptTemplate
 
 negative_caused_by_the_airline_template = PromptTemplate(
@@ -36,10 +36,9 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain.chat_models import ChatOpenAI
 
 # OpenAI model
-# llm = ChatOpenAI(api_key=api_key, model="gpt-4")
 llm = ChatOpenAI(api_key=openai.api_key, model="gpt-3.5-turbo")
 
-# 3 chains
+# chains
 negative_caused_by_the_airline_chain = LLMChain(
     llm=llm, prompt=negative_caused_by_the_airline_template, output_parser=StrOutputParser()
 )
@@ -52,28 +51,19 @@ positive_experience_chain = LLMChain(
     llm=llm, prompt=positive_experience_template, output_parser=StrOutputParser()
 )
 
-# Based on user's input, provide a response
+# RunnableBranch
+from langchain_core.runnables import RunnableBranch
+
+branch = RunnableBranch(
+    (lambda x: "bad" in x["text"].lower() and "airline" in x["text"].lower(), negative_caused_by_the_airline_chain),
+    (lambda x: "bad" in x["text"].lower() and "airline" not in x["text"].lower(), negative_beyond_airline_control_chain),
+    positive_experience_chain  # This will be used if neither of the above conditions match
+)
+
+# use those branch to give an output response based on the user input
 if st.button("Submit Feedback"):
     if user_prompt:
-        # Handle feedback caused by the airline
-        response = negative_caused_by_the_airline_chain.run({"text": user_prompt}).strip()
-
-        if response:
-            st.write(response)
-        else:
-            # Handle feedback beyond the airline's control
-            response = negative_beyond_airline_control_chain.run({"text": user_prompt}).strip()
-
-            if response:
-                st.write(response)
-            else:
-                # Handle positive feedback
-                response = positive_experience_chain.run({"text": user_prompt}).strip()
-
-                if response:
-                    st.write(response)
-                else:
-                    # Default message if no specific response
-                    st.write("Thank you for your feedback.")
+        response = branch.run({"text": user_prompt}).strip()
+        st.write(response)
     else:
         st.write("Please enter your experience.")
