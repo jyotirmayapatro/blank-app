@@ -52,28 +52,20 @@ positive_experience_chain = LLMChain(
     llm=llm, prompt=positive_experience_template, output_parser=StrOutputParser()
 )
 
-# Import RunnableBranch and set up branching logic
+# RunnableBranch
 from langchain_core.runnables import RunnableBranch
 
 branch = RunnableBranch(
     (lambda x: "bad" in x["text"].lower() and "airline" in x["text"].lower(), negative_caused_by_the_airline_chain),
     (lambda x: "bad" in x["text"].lower() and "airline" not in x["text"].lower(), negative_beyond_airline_control_chain),
-    positive_experience_chain  # Default to this chain if neither condition matches
+    positive_experience_chain  # This will be used if neither of the above conditions match
 )
 
-# Use branch to process user input and give a response
+# Use the branch to provide a response based on the user input
 if st.button("Submit Feedback"):
     if user_prompt:
-        try:
-            # Call the branch directly with the input data
-            response = branch({"text": user_prompt})
-            
-            # Check if the response is a string and display it
-            if isinstance(response, str):
-                st.write(response.strip())
-            else:
-                st.write("Received a non-string response:", response)
-        except Exception as e:
-            st.error(f"An error occurred: {e}")
+        # Use invoke instead of run
+        response = branch.invoke({"text": user_prompt}).strip()
+        st.write(response)
     else:
         st.write("Please enter your experience.")
