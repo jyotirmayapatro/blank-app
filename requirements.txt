@@ -1,5 +1,9 @@
 # explictely mentioning the version name to adjust from few errors. So my code will pick the right version
 
-streamlit==1.23.1           
-openai==0.27.7               
-langchain==0.0.170          
+# streamlit==1.23.1           
+# openai==0.27.7               
+# langchain==0.0.170      
+
+streamlit 
+openai        
+langchain 
