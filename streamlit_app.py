@@ -64,7 +64,9 @@ branch = RunnableBranch(
 # Use RunnableBranch to invoke the appropriate chain based on the input
 if st.button("Submit Feedback"):
     if user_prompt:
-        response = branch.invoke({"text": user_prompt}).strip()  # Ensure correct use of invoke
-        st.write(response)
+        # Invoke branch and handle dictionary output
+        response = branch.invoke({"text": user_prompt})
+        response_content = response.get("text", "").strip()  # Extract content if available
+        st.write(response_content if response_content else "Thank you for your feedback.")
     else:
         st.write("Please enter your experience.")
