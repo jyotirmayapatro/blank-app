@@ -1,6 +1,9 @@
 import streamlit as st
-import openai  # Import the openai package directly
+from openai import OpenAI 
 import os
+
+# Set the API Key
+os.environ["OPENAI_API_KEY"] = st.secrets["OpenAIkey"]
 
 # Reference: https://github.com/elhamod/openaistreamlit/blob/main/streamlit_app.py
 # JP's application title
@@ -9,7 +12,6 @@ st.title("JP's Super Awesome App for Travel Experience!")
 # User input for travel experience
 user_prompt = st.text_area("What is your latest travel experience?")
 
-# Load your API Key from environment variables
 os.environ["OPENAI_API_KEY"] = st.secrets["OpenAIkey"]
 
 # Initialize OpenAI API
