@@ -70,3 +70,13 @@ if st.button("Submit Feedback"):
         st.write(response_content if response_content else "Thank you for your feedback.")
     else:
         st.write("Please enter your experience.")
+
+
+## #  I have used many references:
+# https://github.com/elhamod/openaistreamlit/blob/main/streamlit_app.py
+# Codes from previous class
+# https://github.com/openai/openai-python
+# https://docs.streamlit.io/develop/api-reference/widgets
+# https://python.langchain.com/api_reference/core/runnables/langchain_core.runnables.branch.RunnableBranch.html
+# https://v03.api.js.langchain.com/classes/_langchain_core.runnables.RunnableBranch.html
+# https://www.mirascope.com/blog/langchain-runnables
